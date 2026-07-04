@@ -13,6 +13,10 @@
     --grain:#E8A93B;
     --protein:#B25CC9;
     --dairy:#4FB3E8;
+    --carb:#E8A93B;
+    --fat:#3FA6A6;
+    --healthy:#3FA66B;
+    --treat:#E8622F;
     --ink:#3A2E1F;
     --card-bg:#FFFFFF;
   }
@@ -32,8 +36,8 @@
   h1{
     font-family:'Baloo 2',cursive;
     text-align:center;
-    font-size:clamp(28px,5vw,44px);
-    margin:18px 0 4px;
+    font-size:clamp(26px,5vw,42px);
+    margin:16px 0 2px;
     color:#E8622F;
     text-shadow:2px 2px 0 #fff, 4px 4px 0 rgba(0,0,0,0.06);
   }
@@ -41,15 +45,50 @@
     text-align:center;
     font-weight:700;
     color:#8a7358;
-    margin-bottom:10px;
+    margin-bottom:16px;
     font-size:15px;
   }
-  .scoreboard{
+
+  /* ---------- NAV TABS ---------- */
+  .tabs{
     display:flex;
     justify-content:center;
-    gap:14px;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:22px;
+    padding:0 12px;
+  }
+  .tab-btn{
+    font-family:'Baloo 2',cursive;
+    font-weight:700;
+    font-size:14.5px;
+    background:#fff;
+    color:#8a6a3f;
+    border:2px solid #f0d9ab;
+    border-radius:999px;
+    padding:9px 18px;
+    cursor:pointer;
+    box-shadow:0 3px 0 #e9d7b0;
+    transition:transform .1s ease, box-shadow .1s ease;
+  }
+  .tab-btn:active{transform:translateY(2px);box-shadow:0 1px 0 #e9d7b0;}
+  .tab-btn.active{
+    background:#E8622F;
+    color:#fff;
+    border-color:#c94f21;
+    box-shadow:0 3px 0 #c94f21;
+  }
+
+  .screen{display:none;}
+  .screen.active{display:block;}
+
+  .level-header{
+    display:flex;
+    justify-content:center;
     align-items:center;
+    gap:14px;
     margin-bottom:14px;
+    flex-wrap:wrap;
   }
   .score-pill{
     background:#fff;
@@ -69,7 +108,7 @@
     padding:8px 18px;
     font-family:'Baloo 2',cursive;
     font-weight:700;
-    font-size:15px;
+    font-size:14px;
     cursor:pointer;
     box-shadow:0 3px 0 #c9453b;
   }
@@ -82,10 +121,10 @@
     display:flex;
     flex-direction:column;
     align-items:center;
-    gap:28px;
+    gap:26px;
   }
 
-  /* ---------- PLATE ---------- */
+  /* ---------- PLATE (level 1) ---------- */
   .plate-area{
     position:relative;
     display:flex;
@@ -95,8 +134,8 @@
     justify-content:center;
   }
   .plate-ring{
-    width:min(78vw,360px);
-    height:min(78vw,360px);
+    width:min(78vw,340px);
+    height:min(78vw,340px);
     border-radius:50%;
     background:#fff;
     padding:14px;
@@ -139,11 +178,11 @@
   .quad.fruit{background:var(--fruit);}
   .quad.grain{background:var(--grain);}
   .quad.protein{background:var(--protein);}
-  .quad.dragover{filter:brightness(1.18);transform:scale(1.03);}
+  .quad.dragover, .box-zone.dragover, .bin-zone.dragover{filter:brightness(1.18);transform:scale(1.03);}
 
   .dairy-cup{
-    width:min(24vw,110px);
-    height:min(24vw,110px);
+    width:min(22vw,100px);
+    height:min(22vw,100px);
     border-radius:50%;
     background:var(--dairy);
     display:flex;
@@ -153,10 +192,8 @@
     margin-bottom:10px;
     transition:filter .15s ease, transform .15s ease;
   }
-  .dairy-cup.dragover{filter:brightness(1.18);transform:scale(1.05);}
   .dairy-cup .quad-label{font-size:clamp(11px,2vw,14px);}
 
-  /* dropped items placed on plate */
   .placed-item{
     position:absolute;
     font-size:26px;
@@ -169,7 +206,7 @@
     100%{transform:scale(1);}
   }
 
-  /* ---------- TRAY ---------- */
+  /* ---------- TRAY (shared) ---------- */
   .tray-label{
     font-family:'Baloo 2',cursive;
     font-weight:700;
@@ -187,6 +224,7 @@
     background:repeating-linear-gradient(135deg,#fff,#fff 14px,#fbeed9 14px,#fbeed9 28px);
     border-radius:20px;
     box-shadow:inset 0 0 0 3px #f0d9ab;
+    min-height:60px;
   }
   .food-card{
     width:74px;
@@ -206,7 +244,7 @@
   }
   .food-card:active{cursor:grabbing;}
   .food-card .emoji{font-size:34px;line-height:1;}
-  .food-card .name{font-size:10.5px;font-weight:700;color:#7a6a52;margin-top:4px;}
+  .food-card .name{font-size:10.5px;font-weight:700;color:#7a6a52;margin-top:4px;text-align:center;}
   .food-card.dragging{
     position:fixed;
     z-index:500;
@@ -229,6 +267,230 @@
     75%{transform:translateX(-3px) rotate(-2deg);}
     100%{transform:translateX(0) rotate(0);}
   }
+
+  /* ---------- box zones (macros / healthy-unhealthy) ---------- */
+  .box-row{
+    display:flex;
+    gap:18px;
+    flex-wrap:wrap;
+    justify-content:center;
+    width:100%;
+  }
+  .box-zone{
+    width:220px;
+    min-height:150px;
+    border-radius:18px;
+    padding:14px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    box-shadow:0 8px 0 rgba(0,0,0,0.12), 0 10px 16px rgba(0,0,0,0.1);
+    transition:filter .15s ease, transform .15s ease;
+  }
+  .box-zone .zone-title{
+    font-family:'Baloo 2',cursive;
+    font-weight:700;
+    color:#fff;
+    text-shadow:0 2px 3px rgba(0,0,0,0.2);
+    font-size:15px;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    margin-bottom:8px;
+  }
+  .box-zone .collected{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    justify-content:center;
+    align-content:flex-start;
+    flex:1;
+  }
+  .box-zone .collected span{
+    font-size:22px;
+    animation:pop-settle .4s ease;
+    filter:drop-shadow(0 2px 2px rgba(0,0,0,0.2));
+  }
+  .box-zone.carbs{background:var(--carb);}
+  .box-zone.protein{background:var(--protein);}
+  .box-zone.fats{background:var(--fat);}
+  .bin-zone{
+    width:260px;
+    min-height:170px;
+    border-radius:18px;
+    padding:16px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    box-shadow:0 8px 0 rgba(0,0,0,0.12), 0 10px 16px rgba(0,0,0,0.1);
+    transition:filter .15s ease, transform .15s ease;
+  }
+  .bin-zone.healthy{background:var(--healthy);}
+  .bin-zone.treat{background:var(--treat);}
+  .bin-zone .zone-title{
+    font-family:'Baloo 2',cursive;
+    font-weight:700;
+    color:#fff;
+    text-shadow:0 2px 3px rgba(0,0,0,0.2);
+    font-size:17px;
+    margin-bottom:2px;
+  }
+  .bin-zone .zone-sub{
+    color:rgba(255,255,255,0.85);
+    font-weight:700;
+    font-size:11.5px;
+    margin-bottom:8px;
+  }
+  .bin-zone .collected{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    justify-content:center;
+    flex:1;
+  }
+  .bin-zone .collected span{
+    font-size:24px;
+    animation:pop-settle .4s ease;
+    filter:drop-shadow(0 2px 2px rgba(0,0,0,0.2));
+  }
+
+  /* ---------- macro info cards ---------- */
+  .macro-cards{
+    display:flex;
+    gap:16px;
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+  .macro-card{
+    width:200px;
+    background:#fff;
+    border-radius:18px;
+    padding:16px;
+    text-align:center;
+    box-shadow:0 4px 0 #e9d7b0, 0 6px 12px rgba(0,0,0,0.08);
+    position:relative;
+  }
+  .macro-card .macro-icon{font-size:38px;}
+  .macro-card .macro-name{
+    font-family:'Baloo 2',cursive;
+    font-weight:700;
+    font-size:16px;
+    margin:6px 0 10px;
+  }
+  .learn-btn{
+    font-family:'Baloo 2',cursive;
+    font-weight:700;
+    font-size:13.5px;
+    color:#fff;
+    border:none;
+    border-radius:999px;
+    padding:8px 14px;
+    cursor:pointer;
+    width:100%;
+  }
+  .macro-card.carbs .learn-btn{background:var(--carb);}
+  .macro-card.protein .learn-btn{background:var(--protein);}
+  .macro-card.fats .learn-btn{background:var(--fat);}
+  .macro-card .done-badge{
+    position:absolute;
+    top:-10px;
+    right:-10px;
+    background:#3FA66B;
+    color:#fff;
+    width:30px;height:30px;
+    border-radius:50%;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    font-size:16px;
+    box-shadow:0 3px 6px rgba(0,0,0,0.2);
+  }
+  .macro-card.completed .done-badge{display:flex;}
+
+  .section-divider{
+    font-family:'Baloo 2',cursive;
+    font-weight:700;
+    color:#8a5a2b;
+    font-size:16px;
+    text-align:center;
+    margin:2px 0 -8px;
+  }
+
+  /* ---------- QUIZ MODAL ---------- */
+  .modal-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(58,46,31,0.55);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:800;
+    padding:16px;
+  }
+  .modal-overlay.show{display:flex;}
+  .modal-card{
+    background:#fff;
+    border-radius:22px;
+    padding:26px 28px;
+    max-width:380px;
+    width:100%;
+    text-align:center;
+    box-shadow:0 20px 40px rgba(0,0,0,0.3);
+    position:relative;
+  }
+  .modal-card .modal-icon{font-size:46px;}
+  .modal-card h3{
+    font-family:'Baloo 2',cursive;
+    margin:8px 0 4px;
+    font-size:20px;
+  }
+  .modal-card .modal-body{
+    font-size:14.5px;
+    font-weight:600;
+    color:#5a4a38;
+    line-height:1.5;
+    margin-bottom:18px;
+  }
+  .modal-next-btn, .modal-close-btn{
+    font-family:'Baloo 2',cursive;
+    font-weight:700;
+    font-size:15px;
+    color:#fff;
+    background:var(--fruit);
+    border:none;
+    border-radius:999px;
+    padding:10px 22px;
+    cursor:pointer;
+    box-shadow:0 3px 0 #c9453b;
+  }
+  .quiz-question{
+    font-family:'Baloo 2',cursive;
+    font-weight:700;
+    font-size:16px;
+    margin-bottom:14px;
+  }
+  .quiz-options{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-bottom:6px;
+  }
+  .quiz-option{
+    font-family:'Nunito',sans-serif;
+    font-weight:700;
+    font-size:14px;
+    text-align:left;
+    background:#fbeed9;
+    border:2px solid #f0d9ab;
+    border-radius:12px;
+    padding:10px 14px;
+    cursor:pointer;
+    transition:transform .1s ease;
+  }
+  .quiz-option:hover{transform:translateX(2px);}
+  .quiz-option.correct-flash{background:#c8f0d6;border-color:#3FA66B;}
+  .quiz-option.wrong-flash{background:#fadad3;border-color:#E8622F;animation:wobble .5s ease;}
+  .modal-hidden{display:none;}
 
   /* ---------- CHEF ---------- */
   .chef-wrap{
@@ -296,7 +558,6 @@
     transform:scale(1) translateY(0);
   }
 
-  /* correct check mark burst */
   .check-burst{
     position:fixed;
     z-index:550;
@@ -365,113 +626,155 @@
     .chef-wrap{right:8px;bottom:8px;}
     .chef{font-size:48px;}
     .speech-bubble{right:36px;max-width:170px;font-size:13px;padding:10px 12px;}
+    .box-zone{width:100%;max-width:280px;}
+    .bin-zone{width:100%;max-width:320px;}
   }
 </style>
 </head>
 <body>
 
 <h1>Plate It Right! 🍽️</h1>
-<div class="subtitle">Drag each food onto the correct food group to help Chef Marco build a balanced plate</div>
+<div class="subtitle">Three challenges with Chef Jason 🧑🏽‍🍳 — sort, learn, and level up your food knowledge</div>
 
-<div class="scoreboard">
-  <div class="score-pill">✅ <span id="scoreCount">0</span> / <span id="scoreTotal">0</span></div>
-  <button class="reset-btn" id="resetBtn">🔄 Restart</button>
+<div class="tabs">
+  <button class="tab-btn active" data-tab="foodgroups">🍽️ Food Groups</button>
+  <button class="tab-btn" data-tab="macros">🥑 Macronutrients</button>
+  <button class="tab-btn" data-tab="healthy">🥗 Healthy or Treat?</button>
 </div>
 
-<div class="game-wrap">
-  <div class="plate-area">
-    <div class="plate-ring">
-      <div class="plate-inner">
-        <div class="quad veg" data-group="vegetables">
-          <div class="quad-label"><span class="icon">🥦</span>Vegetables</div>
-        </div>
-        <div class="quad fruit" data-group="fruits">
-          <div class="quad-label"><span class="icon">🍎</span>Fruits</div>
-        </div>
-        <div class="quad grain" data-group="grains">
-          <div class="quad-label"><span class="icon">🌾</span>Grains</div>
-        </div>
-        <div class="quad protein" data-group="protein">
-          <div class="quad-label"><span class="icon">🍗</span>Protein</div>
+<!-- ============ LEVEL 1: FOOD GROUPS ============ -->
+<section class="screen active" id="screen-foodgroups">
+  <div class="level-header">
+    <div class="score-pill">✅ <span id="scoreCount1">0</span> / <span id="scoreTotal1">0</span></div>
+    <button class="reset-btn" data-reset="foodgroups">🔄 Restart</button>
+  </div>
+  <div class="game-wrap">
+    <div class="plate-area" id="plateArea1">
+      <div class="plate-ring">
+        <div class="plate-inner">
+          <div class="quad veg" data-group="vegetables">
+            <div class="quad-label"><span class="icon">🥦</span>Vegetables</div>
+          </div>
+          <div class="quad fruit" data-group="fruits">
+            <div class="quad-label"><span class="icon">🍎</span>Fruits</div>
+          </div>
+          <div class="quad grain" data-group="grains">
+            <div class="quad-label"><span class="icon">🌾</span>Grains</div>
+          </div>
+          <div class="quad protein" data-group="protein">
+            <div class="quad-label"><span class="icon">🍗</span>Protein</div>
+          </div>
         </div>
       </div>
+      <div class="dairy-cup" data-group="dairy">
+        <div class="quad-label"><span class="icon">🥛</span>Dairy</div>
+      </div>
     </div>
-    <div class="dairy-cup" data-group="dairy">
-      <div class="quad-label"><span class="icon">🥛</span>Dairy</div>
+    <div>
+      <div class="tray-label">Food tray — drag an item up to the plate:</div>
+      <div class="tray" id="tray1"></div>
     </div>
   </div>
+</section>
 
-  <div>
-    <div class="tray-label">Food tray — drag an item up to the plate:</div>
-    <div class="tray" id="tray"></div>
+<!-- ============ LEVEL 2: MACRONUTRIENTS ============ -->
+<section class="screen" id="screen-macros">
+  <div class="level-header">
+    <div class="score-pill">✅ <span id="scoreCount2">0</span> / <span id="scoreTotal2">0</span></div>
+    <button class="reset-btn" data-reset="macros">🔄 Restart</button>
   </div>
-</div>
+  <div class="game-wrap">
+    <div class="section-divider">Step 1 — Learn what each nutrient does</div>
+    <div class="macro-cards" id="macroCards"></div>
+
+    <div class="section-divider">Step 2 — Sort the foods into the right group</div>
+    <div class="box-row">
+      <div class="box-zone carbs" data-group="carbs">
+        <div class="zone-title">🍞 Carbohydrates</div>
+        <div class="collected"></div>
+      </div>
+      <div class="box-zone protein" data-group="protein">
+        <div class="zone-title">🍗 Protein</div>
+        <div class="collected"></div>
+      </div>
+      <div class="box-zone fats" data-group="fats">
+        <div class="zone-title">🥑 Fats &amp; Oils</div>
+        <div class="collected"></div>
+      </div>
+    </div>
+    <div>
+      <div class="tray-label">Food tray:</div>
+      <div class="tray" id="tray2"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LEVEL 3: HEALTHY OR TREAT ============ -->
+<section class="screen" id="screen-healthy">
+  <div class="level-header">
+    <div class="score-pill">✅ <span id="scoreCount3">0</span> / <span id="scoreTotal3">0</span></div>
+    <button class="reset-btn" data-reset="healthy">🔄 Restart</button>
+  </div>
+  <div class="game-wrap">
+    <div class="box-row">
+      <div class="bin-zone healthy" data-group="healthy">
+        <div class="zone-title">🥗 Healthy</div>
+        <div class="zone-sub">everyday foods</div>
+        <div class="collected"></div>
+      </div>
+      <div class="bin-zone treat" data-group="unhealthy">
+        <div class="zone-title">🍩 Unhealthy</div>
+        <div class="zone-sub">sometimes / treat foods</div>
+        <div class="collected"></div>
+      </div>
+    </div>
+    <div>
+      <div class="tray-label">Food tray — where does each one belong?</div>
+      <div class="tray" id="tray3"></div>
+    </div>
+  </div>
+</section>
 
 <div class="chef-wrap">
   <div class="speech-bubble" id="speechBubble"></div>
-  <div class="chef" id="chef">👨‍🍳</div>
+  <div class="chef" id="chef">🧑🏽‍🍳</div>
+</div>
+
+<div class="modal-overlay" id="quizModal">
+  <div class="modal-card">
+    <div class="modal-icon" id="quizIcon">🍞</div>
+    <h3 id="quizTitle">Carbohydrates</h3>
+    <div id="quizDefStage">
+      <div class="modal-body" id="quizDefinition"></div>
+      <button class="modal-next-btn" id="quizNextBtn">Got it — quiz me! ➜</button>
+    </div>
+    <div id="quizQuestionStage" class="modal-hidden">
+      <div class="quiz-question" id="quizQuestionText"></div>
+      <div class="quiz-options" id="quizOptions"></div>
+    </div>
+  </div>
 </div>
 
 <div class="win-banner" id="winBanner">
   <div class="win-card">
     <div class="win-emoji">🎉</div>
-    <h2>You did it!</h2>
-    <p>Every food found its home. Chef Marco is impressed!</p>
+    <h2 id="winTitle">You did it!</h2>
+    <p id="winMessage">Every food found its home. Chef Jason is impressed!</p>
     <button class="reset-btn" id="playAgainBtn">Play Again</button>
   </div>
 </div>
 
 <script>
 (function(){
-  const FOODS = [
-    {emoji:"🍎", name:"Apple", group:"fruits"},
-    {emoji:"🍌", name:"Banana", group:"fruits"},
-    {emoji:"🍇", name:"Grapes", group:"fruits"},
-    {emoji:"🍓", name:"Strawberry", group:"fruits"},
-    {emoji:"🥦", name:"Broccoli", group:"vegetables"},
-    {emoji:"🥕", name:"Carrot", group:"vegetables"},
-    {emoji:"🍅", name:"Tomato", group:"vegetables"},
-    {emoji:"🌽", name:"Corn", group:"vegetables"},
-    {emoji:"🍞", name:"Bread", group:"grains"},
-    {emoji:"🍚", name:"Rice", group:"grains"},
-    {emoji:"🍝", name:"Pasta", group:"grains"},
-    {emoji:"🥐", name:"Croissant", group:"grains"},
-    {emoji:"🍗", name:"Chicken", group:"protein"},
-    {emoji:"🥚", name:"Egg", group:"protein"},
-    {emoji:"🐟", name:"Fish", group:"protein"},
-    {emoji:"🥜", name:"Peanuts", group:"protein"},
-    {emoji:"🥛", name:"Milk", group:"dairy"},
-    {emoji:"🧀", name:"Cheese", group:"dairy"},
-    {emoji:"🍦", name:"Yogurt", group:"dairy"}
-  ];
 
-  const CORRECT_LINES = [
-    "Superb Choice - excellento!",
-    "Magnifico! Right on the plate!",
-    "Bellissimo! You know your food!",
-    "Chef's kiss! Perfecto!"
-  ];
-  const WRONG_LINES = [
-    "Oh no - ho ho ho. Try again buddy!",
-    "Whoopsie! Wrong group, little chef!",
-    "Not quite! Have another go, friend!",
-    "Ho ho, close but no cannoli! Retry!"
-  ];
-
-  const tray = document.getElementById('tray');
+  /* ============================================================
+     SHARED: chef, speech bubble, audio, check-burst
+  ============================================================ */
   const chef = document.getElementById('chef');
   const bubble = document.getElementById('speechBubble');
-  const scoreCountEl = document.getElementById('scoreCount');
-  const scoreTotalEl = document.getElementById('scoreTotal');
-  const winBanner = document.getElementById('winBanner');
-
-  let score = 0;
   let bubbleTimeout = null;
-
-  scoreTotalEl.textContent = FOODS.length;
-
-  // ---- audio (synthesized, no external files) ----
   let audioCtx = null;
+
   function ctx(){
     if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     return audioCtx;
@@ -499,22 +802,31 @@
     tone(160, 0.12, 0.3, 'sawtooth', 0.12);
   }
 
+  const CORRECT_LINES = [
+    "Superb Choice - excellento!",
+    "Magnifico! Right on the plate!",
+    "Bellissimo! You know your food!",
+    "Chef's kiss! Perfecto!"
+  ];
+  const WRONG_LINES = [
+    "Oh no - ho ho ho. Try again buddy!",
+    "Whoopsie! Wrong group, little chef!",
+    "Not quite! Have another go, friend!",
+    "Ho ho, close but no cannoli! Retry!"
+  ];
+  function randomFrom(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
   function showBubble(text, kind){
     clearTimeout(bubbleTimeout);
     bubble.textContent = text;
     bubble.className = 'speech-bubble ' + kind;
-    // force reflow so re-trigger works even with same class
     void bubble.offsetWidth;
     bubble.classList.add('show');
     chef.classList.remove('bounce','shake');
     void chef.offsetWidth;
     chef.classList.add(kind === 'correct' ? 'bounce' : 'shake');
-    bubbleTimeout = setTimeout(()=>{
-      bubble.classList.remove('show');
-    }, 2400);
+    bubbleTimeout = setTimeout(()=>{ bubble.classList.remove('show'); }, 2400);
   }
-
-  function randomFrom(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 
   function checkBurstAt(x, y){
     const wrap = document.createElement('div');
@@ -530,46 +842,40 @@
     setTimeout(()=>wrap.remove(), 950);
   }
 
-  function placeIconOnGroup(food, targetEl){
-    const rect = targetEl.getBoundingClientRect();
-    const parentRect = targetEl.closest('.plate-area').getBoundingClientRect();
-    const placed = document.createElement('div');
-    placed.className = 'placed-item';
-    placed.textContent = food.emoji;
-    // random-ish position within the target zone, biased toward center
-    const offX = (Math.random()-0.5) * rect.width * 0.35;
-    const offY = (Math.random()-0.5) * rect.height * 0.35;
-    const x = rect.left - parentRect.left + rect.width/2 + offX - 13;
-    const y = rect.top - parentRect.top + rect.height/2 + offY - 13;
-    document.querySelector('.plate-area').style.position = 'relative';
-    placed.style.left = x + 'px';
-    placed.style.top = y + 'px';
-    document.querySelector('.plate-area').appendChild(placed);
+  const winBanner = document.getElementById('winBanner');
+  const winTitle = document.getElementById('winTitle');
+  const winMessage = document.getElementById('winMessage');
+  function showWin(message){
+    winMessage.textContent = message;
+    setTimeout(()=> winBanner.classList.add('show'), 600);
   }
+  document.getElementById('playAgainBtn').addEventListener('click', ()=>{
+    winBanner.classList.remove('show');
+  });
 
-  function buildTray(){
-    tray.innerHTML = '';
-    FOODS.forEach((food, idx)=>{
-      const card = document.createElement('div');
-      card.className = 'food-card';
-      card.dataset.index = idx;
-      card.innerHTML = `<div class="emoji">${food.emoji}</div><div class="name">${food.name}</div>`;
-      tray.appendChild(card);
-      attachDrag(card, food);
+  /* ============================================================
+     TAB NAVIGATION
+  ============================================================ */
+  document.querySelectorAll('.tab-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('screen-' + btn.dataset.tab).classList.add('active');
     });
-  }
+  });
 
-  function attachDrag(card, food){
+  /* ============================================================
+     GENERIC DRAG ENGINE
+     attachDrag(card, food, { getZones, onCorrect, onWrong, trayEl })
+  ============================================================ */
+  function attachDrag(card, food, opts){
     let dragging = false;
-    let startX, startY, offsetX, offsetY;
+    let offsetX, offsetY;
     let currentDropZone = null;
 
-    function getDropZones(){
-      return Array.from(document.querySelectorAll('.quad, .dairy-cup'));
-    }
-
     function findZoneUnder(clientX, clientY){
-      const zones = getDropZones();
+      const zones = opts.getZones();
       for(const z of zones){
         const r = z.getBoundingClientRect();
         if(clientX >= r.left && clientX <= r.right && clientY >= r.top && clientY <= r.bottom){
@@ -591,7 +897,7 @@
       card.style.height = rect.height + 'px';
       card.style.left = rect.left + 'px';
       card.style.top = rect.top + 'px';
-      document.body.appendChild(card); // bring to top layer
+      document.body.appendChild(card);
       window.addEventListener('pointermove', onPointerMove);
       window.addEventListener('pointerup', onPointerUp);
     }
@@ -602,11 +908,8 @@
       const clientY = e.clientY ?? e.touches?.[0].clientY;
       card.style.left = (clientX - offsetX) + 'px';
       card.style.top = (clientY - offsetY) + 'px';
-
       const zone = findZoneUnder(clientX, clientY);
-      if(currentDropZone && currentDropZone !== zone){
-        currentDropZone.classList.remove('dragover');
-      }
+      if(currentDropZone && currentDropZone !== zone) currentDropZone.classList.remove('dragover');
       if(zone) zone.classList.add('dragover');
       currentDropZone = zone;
     }
@@ -618,16 +921,12 @@
       card.style.top = '';
       card.style.width = '';
       card.style.height = '';
-      // re-insert into tray at original index position
+      const tray = opts.trayEl;
       const cards = Array.from(tray.children);
       const idx = parseInt(card.dataset.index);
       let inserted = false;
       for(const c of cards){
-        if(parseInt(c.dataset.index) > idx){
-          tray.insertBefore(card, c);
-          inserted = true;
-          break;
-        }
+        if(parseInt(c.dataset.index) > idx){ tray.insertBefore(card, c); inserted = true; break; }
       }
       if(!inserted) tray.appendChild(card);
     }
@@ -637,7 +936,6 @@
       dragging = false;
       window.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('pointerup', onPointerUp);
-
       if(currentDropZone) currentDropZone.classList.remove('dragover');
 
       const clientX = e.clientX ?? e.changedTouches?.[0].clientX;
@@ -647,28 +945,21 @@
       if(zone){
         const targetGroup = zone.dataset.group;
         if(targetGroup === food.group){
-          // correct!
           playDing();
           showBubble(randomFrom(CORRECT_LINES), 'correct');
           checkBurstAt(clientX, clientY);
           card.classList.add('placed');
           returnToTray();
-          placeIconOnGroup(food, zone);
-          score++;
-          scoreCountEl.textContent = score;
-          if(score === FOODS.length){
-            setTimeout(()=> winBanner.classList.add('show'), 700);
-          }
+          opts.onCorrect(food, zone, clientX, clientY);
         } else {
-          // wrong
           playWomp();
           showBubble(randomFrom(WRONG_LINES), 'wrong');
           returnToTray();
           card.classList.add('wobble');
           setTimeout(()=>card.classList.remove('wobble'), 550);
+          if(opts.onWrong) opts.onWrong(food, card);
         }
       } else {
-        // dropped nowhere valid - just snap back
         returnToTray();
       }
       currentDropZone = null;
@@ -677,20 +968,286 @@
     card.addEventListener('pointerdown', onPointerDown);
   }
 
-  document.getElementById('resetBtn').addEventListener('click', resetGame);
-  document.getElementById('playAgainBtn').addEventListener('click', resetGame);
-
-  function resetGame(){
-    score = 0;
-    scoreCountEl.textContent = 0;
-    winBanner.classList.remove('show');
-    document.querySelectorAll('.placed-item').forEach(el=>el.remove());
-    // shuffle food order a little each time for replay variety
-    FOODS.sort(()=>Math.random()-0.5);
-    buildTray();
+  function buildTray(trayEl, foods, zoneGetter, onCorrect, onWrong){
+    trayEl.innerHTML = '';
+    foods.forEach((food, idx)=>{
+      const card = document.createElement('div');
+      card.className = 'food-card';
+      card.dataset.index = idx;
+      card.innerHTML = `<div class="emoji">${food.emoji}</div><div class="name">${food.name}</div>`;
+      trayEl.appendChild(card);
+      attachDrag(card, food, { getZones: zoneGetter, onCorrect, onWrong, trayEl });
+    });
   }
 
-  buildTray();
+  /* ============================================================
+     LEVEL 1: FOOD GROUPS (plate)
+  ============================================================ */
+  const FOODS1 = [
+    {emoji:"🍎", name:"Apple", group:"fruits"},
+    {emoji:"🍌", name:"Banana", group:"fruits"},
+    {emoji:"🍇", name:"Grapes", group:"fruits"},
+    {emoji:"🍓", name:"Strawberry", group:"fruits"},
+    {emoji:"🥦", name:"Broccoli", group:"vegetables"},
+    {emoji:"🥕", name:"Carrot", group:"vegetables"},
+    {emoji:"🍅", name:"Tomato", group:"vegetables"},
+    {emoji:"🌽", name:"Corn", group:"vegetables"},
+    {emoji:"🍞", name:"Bread", group:"grains"},
+    {emoji:"🍚", name:"Rice", group:"grains"},
+    {emoji:"🍝", name:"Pasta", group:"grains"},
+    {emoji:"🥐", name:"Croissant", group:"grains"},
+    {emoji:"🍗", name:"Chicken", group:"protein"},
+    {emoji:"🥚", name:"Egg", group:"protein"},
+    {emoji:"🐟", name:"Fish", group:"protein"},
+    {emoji:"🥜", name:"Peanuts", group:"protein"},
+    {emoji:"🥛", name:"Milk", group:"dairy"},
+    {emoji:"🧀", name:"Cheese", group:"dairy"},
+    {emoji:"🍦", name:"Yogurt", group:"dairy"}
+  ];
+  let score1 = 0;
+  const scoreCount1 = document.getElementById('scoreCount1');
+  document.getElementById('scoreTotal1').textContent = FOODS1.length;
+  const tray1 = document.getElementById('tray1');
+  const plateArea1 = document.getElementById('plateArea1');
+
+  function placeIconOnPlate(food, zoneEl){
+    const rect = zoneEl.getBoundingClientRect();
+    const parentRect = plateArea1.getBoundingClientRect();
+    const placed = document.createElement('div');
+    placed.className = 'placed-item';
+    placed.textContent = food.emoji;
+    const offX = (Math.random()-0.5) * rect.width * 0.35;
+    const offY = (Math.random()-0.5) * rect.height * 0.35;
+    const x = rect.left - parentRect.left + rect.width/2 + offX - 13;
+    const y = rect.top - parentRect.top + rect.height/2 + offY - 13;
+    placed.style.left = x + 'px';
+    placed.style.top = y + 'px';
+    plateArea1.appendChild(placed);
+  }
+
+  function zones1(){ return Array.from(document.querySelectorAll('#screen-foodgroups .quad, #screen-foodgroups .dairy-cup')); }
+
+  function resetLevel1(){
+    score1 = 0;
+    scoreCount1.textContent = 0;
+    document.querySelectorAll('#plateArea1 .placed-item').forEach(el=>el.remove());
+    FOODS1.sort(()=>Math.random()-0.5);
+    buildTray(tray1, FOODS1, zones1,
+      (food, zone, x, y)=>{
+        placeIconOnPlate(food, zone);
+        score1++; scoreCount1.textContent = score1;
+        if(score1 === FOODS1.length) showWin("Every food found its home. Chef Jason is impressed!");
+      }
+    );
+  }
+
+  /* ============================================================
+     LEVEL 2: MACRONUTRIENTS
+  ============================================================ */
+  const MACROS = [
+    {
+      key:'carbs', label:'Carbohydrates', icon:'🍞',
+      definition:"Carbohydrates are found in foods like bread, rice, pasta and potatoes. Your body breaks them down into sugar, which gives you quick, ready energy.",
+      question:"Why does our body need carbohydrates?",
+      options:[
+        {text:"To give us quick energy to move, play and think", correct:true},
+        {text:"To help our bones grow taller", correct:false},
+        {text:"To help us see better in the dark", correct:false}
+      ]
+    },
+    {
+      key:'protein', label:'Protein', icon:'🍗',
+      definition:"Protein is found in foods like chicken, eggs, fish, beans and nuts. It gives your body the building blocks it needs to grow and repair itself.",
+      question:"Why does our body need protein?",
+      options:[
+        {text:"To build and repair muscles and other body parts", correct:true},
+        {text:"To give us a rush of quick energy", correct:false},
+        {text:"To help us stay cool in hot weather", correct:false}
+      ]
+    },
+    {
+      key:'fats', label:'Fats & Oils', icon:'🥑',
+      definition:"Fats and oils are found in foods like butter, avocado, nuts and olive oil. They store energy for later and help protect your organs and keep your skin healthy.",
+      question:"Why does our body need fats and oils?",
+      options:[
+        {text:"To store energy for later and protect our organs", correct:true},
+        {text:"To make our teeth stronger", correct:false},
+        {text:"To help us digest food faster", correct:false}
+      ]
+    }
+  ];
+
+  const FOODS2 = [
+    {emoji:"🍞", name:"Bread", group:"carbs"},
+    {emoji:"🍚", name:"Rice", group:"carbs"},
+    {emoji:"🍝", name:"Pasta", group:"carbs"},
+    {emoji:"🥔", name:"Potato", group:"carbs"},
+    {emoji:"🥣", name:"Cereal", group:"carbs"},
+    {emoji:"🍗", name:"Chicken", group:"protein"},
+    {emoji:"🥚", name:"Egg", group:"protein"},
+    {emoji:"🐟", name:"Fish", group:"protein"},
+    {emoji:"🫘", name:"Beans", group:"protein"},
+    {emoji:"🥩", name:"Steak", group:"protein"},
+    {emoji:"🧈", name:"Butter", group:"fats"},
+    {emoji:"🥑", name:"Avocado", group:"fats"},
+    {emoji:"🫒", name:"Olive Oil", group:"fats"},
+    {emoji:"🥥", name:"Coconut", group:"fats"},
+    {emoji:"🥜", name:"Nuts", group:"fats"}
+  ];
+
+  let score2 = 0;
+  const scoreCount2 = document.getElementById('scoreCount2');
+  document.getElementById('scoreTotal2').textContent = FOODS2.length;
+  const tray2 = document.getElementById('tray2');
+
+  function zones2(){ return Array.from(document.querySelectorAll('#screen-macros .box-zone')); }
+
+  function resetLevel2(){
+    score2 = 0;
+    scoreCount2.textContent = 0;
+    document.querySelectorAll('#screen-macros .box-zone .collected').forEach(el=>el.innerHTML='');
+    FOODS2.sort(()=>Math.random()-0.5);
+    buildTray(tray2, FOODS2, zones2,
+      (food, zone)=>{
+        const span = document.createElement('span');
+        span.textContent = food.emoji;
+        zone.querySelector('.collected').appendChild(span);
+        score2++; scoreCount2.textContent = score2;
+        if(score2 === FOODS2.length) showWin("Carbs, protein, fats — all sorted! Chef Jason is impressed!");
+      }
+    );
+  }
+
+  // build macro info cards
+  const macroCardsEl = document.getElementById('macroCards');
+  MACROS.forEach(m=>{
+    const card = document.createElement('div');
+    card.className = 'macro-card ' + m.key;
+    card.innerHTML = `
+      <div class="done-badge">✓</div>
+      <div class="macro-icon">${m.icon}</div>
+      <div class="macro-name">${m.label}</div>
+      <button class="learn-btn">Learn &amp; Quiz</button>
+    `;
+    card.querySelector('.learn-btn').addEventListener('click', ()=> openQuiz(m, card));
+    macroCardsEl.appendChild(card);
+  });
+
+  // quiz modal logic
+  const quizModal = document.getElementById('quizModal');
+  const quizIcon = document.getElementById('quizIcon');
+  const quizTitle = document.getElementById('quizTitle');
+  const quizDefinition = document.getElementById('quizDefinition');
+  const quizDefStage = document.getElementById('quizDefStage');
+  const quizQuestionStage = document.getElementById('quizQuestionStage');
+  const quizQuestionText = document.getElementById('quizQuestionText');
+  const quizOptions = document.getElementById('quizOptions');
+  const quizNextBtn = document.getElementById('quizNextBtn');
+
+  function openQuiz(macro, cardEl){
+    quizIcon.textContent = macro.icon;
+    quizTitle.textContent = macro.label;
+    quizDefinition.textContent = macro.definition;
+    quizDefStage.classList.remove('modal-hidden');
+    quizQuestionStage.classList.add('modal-hidden');
+    quizModal.classList.add('show');
+
+    quizNextBtn.onclick = ()=>{
+      quizDefStage.classList.add('modal-hidden');
+      quizQuestionStage.classList.remove('modal-hidden');
+      quizQuestionText.textContent = macro.question;
+      quizOptions.innerHTML = '';
+      // shuffle option order for replay variety
+      const shuffled = [...macro.options].sort(()=>Math.random()-0.5);
+      shuffled.forEach(opt=>{
+        const btn = document.createElement('button');
+        btn.className = 'quiz-option';
+        btn.textContent = opt.text;
+        btn.addEventListener('click', ()=>{
+          if(opt.correct){
+            btn.classList.add('correct-flash');
+            playDing();
+            showBubble(randomFrom(CORRECT_LINES), 'correct');
+            cardEl.classList.add('completed');
+            setTimeout(()=> quizModal.classList.remove('show'), 900);
+          } else {
+            btn.classList.add('wrong-flash');
+            playWomp();
+            showBubble(randomFrom(WRONG_LINES), 'wrong');
+            setTimeout(()=> btn.classList.remove('wrong-flash'), 550);
+          }
+        });
+        quizOptions.appendChild(btn);
+      });
+    };
+  }
+  quizModal.addEventListener('click', (e)=>{
+    if(e.target === quizModal) quizModal.classList.remove('show');
+  });
+
+  /* ============================================================
+     LEVEL 3: HEALTHY OR TREAT
+  ============================================================ */
+  const FOODS3 = [
+    {emoji:"🍎", name:"Apple", group:"healthy"},
+    {emoji:"🥦", name:"Broccoli", group:"healthy"},
+    {emoji:"🥕", name:"Carrot", group:"healthy"},
+    {emoji:"🐟", name:"Grilled Fish", group:"healthy"},
+    {emoji:"🥗", name:"Salad", group:"healthy"},
+    {emoji:"🍌", name:"Banana", group:"healthy"},
+    {emoji:"🥚", name:"Egg", group:"healthy"},
+    {emoji:"🍊", name:"Orange", group:"healthy"},
+    {emoji:"🍟", name:"Chips", group:"unhealthy"},
+    {emoji:"🍬", name:"Candy", group:"unhealthy"},
+    {emoji:"🥤", name:"Fizzy Drink", group:"unhealthy"},
+    {emoji:"🍰", name:"Cake", group:"unhealthy"},
+    {emoji:"🍩", name:"Donut", group:"unhealthy"},
+    {emoji:"🍫", name:"Chocolate Bar", group:"unhealthy"},
+    {emoji:"🍔", name:"Burger", group:"unhealthy"},
+    {emoji:"🍪", name:"Cookies", group:"unhealthy"}
+  ];
+  let score3 = 0;
+  const scoreCount3 = document.getElementById('scoreCount3');
+  document.getElementById('scoreTotal3').textContent = FOODS3.length;
+  const tray3 = document.getElementById('tray3');
+
+  function zones3(){ return Array.from(document.querySelectorAll('#screen-healthy .bin-zone')); }
+
+  function resetLevel3(){
+    score3 = 0;
+    scoreCount3.textContent = 0;
+    document.querySelectorAll('#screen-healthy .bin-zone .collected').forEach(el=>el.innerHTML='');
+    FOODS3.sort(()=>Math.random()-0.5);
+    buildTray(tray3, FOODS3, zones3,
+      (food, zone)=>{
+        const span = document.createElement('span');
+        span.textContent = food.emoji;
+        zone.querySelector('.collected').appendChild(span);
+        score3++; scoreCount3.textContent = score3;
+        if(score3 === FOODS3.length) showWin("Healthy foods and treats, all sorted! Chef Jason is impressed!");
+      }
+    );
+  }
+
+  /* ============================================================
+     RESET BUTTONS
+  ============================================================ */
+  document.querySelectorAll('[data-reset]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const which = btn.dataset.reset;
+      if(which === 'foodgroups') resetLevel1();
+      if(which === 'macros') resetLevel2();
+      if(which === 'healthy') resetLevel3();
+      winBanner.classList.remove('show');
+    });
+  });
+
+  /* ============================================================
+     INIT
+  ============================================================ */
+  resetLevel1();
+  resetLevel2();
+  resetLevel3();
 })();
 </script>
 
